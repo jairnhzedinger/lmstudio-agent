@@ -34,6 +34,28 @@ Variáveis de ambiente:
 
 - `LM_BASE_URL` – URL da API do LM Studio.
 - `LM_MODEL` – modelo a ser utilizado.
+- `LM_TEMPERATURE` – temperatura das respostas (padrão 0.7).
+- `LM_MAX_TOKENS` – limite máximo de tokens (padrão -1).
+- `LM_STREAM` – defina como `true` para habilitar streaming.
+
+### Requisição com `curl`
+
+O exemplo abaixo mostra como enviar manualmente uma mensagem para o LM Studio:
+
+```bash
+curl http://localhost:1234/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "google/gemma-3-12b",
+    "messages": [
+      { "role": "system", "content": "Always answer in rhymes. Today is Thursday" },
+      { "role": "user", "content": "What day is it today?" }
+    ],
+    "temperature": 0.7,
+    "max_tokens": -1,
+    "stream": false
+}'
+```
 
 O agente suporta várias funções especiais que o modelo pode acionar:
 

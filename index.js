@@ -8,6 +8,13 @@ import {pathToFileURL} from 'url';
 
 const API_BASE = process.env.LM_BASE_URL || 'http://45.161.201.27:1234/v1';
 const MODEL = process.env.LM_MODEL || 'google/gemma-3-12b';
+const TEMPERATURE = process.env.LM_TEMPERATURE
+  ? parseFloat(process.env.LM_TEMPERATURE)
+  : 0.7;
+const MAX_TOKENS = process.env.LM_MAX_TOKENS
+  ? parseInt(process.env.LM_MAX_TOKENS, 10)
+  : -1;
+const STREAM = process.env.LM_STREAM === 'true';
 
 async function chat(messages) {
   let res;
@@ -18,7 +25,9 @@ async function chat(messages) {
       body: JSON.stringify({
         model: MODEL,
         messages,
-        temperature: 0,
+        temperature: TEMPERATURE,
+        max_tokens: MAX_TOKENS,
+        stream: STREAM,
         functions: [
         {
           name: 'cmd',
