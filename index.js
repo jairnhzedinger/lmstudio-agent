@@ -70,15 +70,14 @@ function applyPatch(patch) {
 }
 
 function loadProjectDocs() {
-  const docFiles = ['README.md', path.join('codex-rs', 'README.md')];
+  const candidates = ['README.md', path.join('codex-rs', 'README.md')];
+  const existing = candidates.filter(f =>
+    fs.existsSync(path.join(process.cwd(), f))
+  );
   let docs = '';
-  for (const file of docFiles) {
-    try {
-      const content = fs.readFileSync(path.join(process.cwd(), file), 'utf8');
-      docs += `\n### ${file}\n` + content;
-    } catch {
-      // ignore missing files
-    }
+  for (const file of existing) {
+    const content = fs.readFileSync(path.join(process.cwd(), file), 'utf8');
+    docs += `\n### ${file}\n` + content;
   }
   return docs;
 }
