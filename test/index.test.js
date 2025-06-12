@@ -5,7 +5,7 @@ import {tmpdir} from 'os';
 import {join} from 'path';
 import {spawnSync} from 'child_process';
 import {test} from 'node:test';
-import {loadProjectDocs, runCommand, applyPatch} from '../index.js';
+import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles} from '../index.js';
 
 
 test('loadProjectDocs inclui conteudo do README', () => {
@@ -34,4 +34,21 @@ test('applyPatch aplica patch git', () => {
   const content = fs.readFileSync('foo.txt', 'utf8');
   assert.strictEqual(content, 'world\n');
   process.chdir(cwd);
+});
+
+test('readFile retorna conteudo correto', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
+  const file = join(dir, 'example.txt');
+  fs.writeFileSync(file, 'conteudo');
+  const out = readFile(file);
+  assert.strictEqual(out, 'conteudo');
+});
+
+test('listFiles lista arquivos do diretorio', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
+  fs.writeFileSync(join(dir, 'a.txt'), '');
+  fs.writeFileSync(join(dir, 'b.txt'), '');
+  const out = listFiles(dir);
+  assert.ok(out.includes('a.txt'));
+  assert.ok(out.includes('b.txt'));
 });

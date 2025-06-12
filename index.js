@@ -43,6 +43,28 @@ async function chat(messages) {
           }
         },
         {
+          name: 'read_file',
+          description: 'Lê o conteúdo de um arquivo',
+          parameters: {
+            type: 'object',
+            properties: {
+              path: { type: 'string' }
+            },
+            required: ['path']
+          }
+        },
+        {
+          name: 'list_files',
+          description: 'Lista arquivos em um diretório',
+          parameters: {
+            type: 'object',
+            properties: {
+              dir: { type: 'string' }
+            },
+            required: ['dir']
+          }
+        },
+        {
           name: 'done',
           description: 'Finaliza a sessão',
           parameters: { type: 'object', properties: {} }
@@ -90,6 +112,22 @@ function loadProjectDocs() {
   return docs;
 }
 
+function readFile(pathname) {
+  try {
+    return fs.readFileSync(pathname, 'utf8');
+  } catch (err) {
+    return `erro ao ler arquivo: ${err.message}`;
+  }
+}
+
+function listFiles(dir) {
+  try {
+    return fs.readdirSync(dir).join('\n');
+  } catch (err) {
+    return `erro ao listar arquivos: ${err.message}`;
+  }
+}
+
 async function processChat(messages) {
   while(true){
     const msg = await chat(messages);
@@ -102,6 +140,12 @@ async function processChat(messages) {
       } else if(name === 'apply_patch'){
         const {patch} = JSON.parse(args);
         result = applyPatch(patch);
+      } else if(name === 'read_file'){
+        const {path} = JSON.parse(args);
+        result = readFile(path);
+      } else if(name === 'list_files'){
+        const {dir} = JSON.parse(args);
+        result = listFiles(dir);
       } else if(name === 'done'){
         console.log('Tarefa concluída.');
         return false;
@@ -166,4 +210,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export {chat, runCommand, applyPatch, loadProjectDocs, processChat, main};
+export {chat, runCommand, applyPatch, readFile, listFiles, loadProjectDocs, processChat, main};
