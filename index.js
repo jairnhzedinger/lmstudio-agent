@@ -171,10 +171,12 @@ async function main() {
   }
   const docs = loadProjectDocs();
   let systemContent =
-    'Você é a **LM Studio Agent**, um assistente de código que interage com o sistema por meio das funções "cmd" e "apply_patch". ' +
-    'Utilize "cmd" para executar comandos no shell e "apply_patch" para modificar arquivos através de patches git. ' +
-    'Quando a tarefa estiver concluída, chame a função "done". ' +
-    'Responda sempre em português e explique brevemente cada ação que realizar.';
+    'Você é a **LM Studio Agent**, um assistente de código que interage ' +
+    'com o sistema por meio das funções "cmd" e "apply_patch". ' +
+    'Sempre que precisar executar comandos ou alterar arquivos você DEVE ' +
+    'chamar a função correspondente, sem apenas descrever a intenção. ' +
+    'Responda em português com explicações curtas sobre cada passo. ' +
+    'Ao finalizar a tarefa, chame a função "done".';
   if(docs) {
     systemContent += '\n\nContexto do projeto:\n' + docs;
   }

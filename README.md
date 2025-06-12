@@ -43,6 +43,18 @@ O agente suporta várias funções especiais que o modelo pode acionar:
 - `list_files` – lista os arquivos de um diretório.
 - `done` – encerra a sessão.
 
+## Dicas de prompt
+
+Para garantir que o modelo execute as ações desejadas, inclua instruções claras
+no seu pedido. Por exemplo:
+
+```bash
+lmstudio-agent "Use \`cmd\` para executar 'htop -v' e mostre somente a saída"
+```
+
+Modelos tendem a imitar o formato do exemplo e a chamar as funções em vez de
+apenas descrever o que fariam.
+
 ### Testes
 
 Execute `npm test` para rodar a suíte de testes automatizados.
