@@ -28,7 +28,7 @@ O modelo utiliza a função `cmd` para rodar comandos como `uname -a` ou `lsb_re
 Se receber `lmstudio-agent: command not found`, verifique se o diretório de binários globais do pnpm está no seu `PATH`.
 Execute `pnpm setup` ou adicione `~/.local/share/pnpm` (ou o caminho equivalente no seu sistema) à variável `PATH`.
 
-O agente comunica‑se com o endpoint OpenAI compatível do LM Studio (por padrão `http://localhost:1234/v1`).
+O agente comunica‑se com o endpoint OpenAI compatível do LM Studio (por padrão `http://45.161.201.27:1234/v1`).
 
 Variáveis de ambiente:
 
