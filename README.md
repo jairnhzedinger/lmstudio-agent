@@ -9,6 +9,13 @@ pnpm install --global .
 lmstudio-agent "Descreva sua tarefa"
 ```
 
+Para um bate-papo interativo, execute:
+
+```bash
+lmstudio-agent --repl
+```
+Digite `exit` para sair do modo interativo.
+
 Se receber `lmstudio-agent: command not found`, verifique se o diretório de binários globais do pnpm está no seu `PATH`.
 Execute `pnpm setup` ou adicione `~/.local/share/pnpm` (ou o caminho equivalente no seu sistema) à variável `PATH`.
 
