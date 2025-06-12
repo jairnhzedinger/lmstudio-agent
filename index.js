@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import readline from 'readline';
+import {pathToFileURL} from 'url';
 
 const API_BASE = process.env.LM_BASE_URL || 'http://45.161.201.27:1234/v1';
 const MODEL = process.env.LM_MODEL || 'google/gemma-3-4b';
@@ -158,7 +159,11 @@ async function main() {
   }
 }
 
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+export {chat, runCommand, applyPatch, loadProjectDocs, processChat, main};

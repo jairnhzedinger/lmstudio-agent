@@ -4,5 +4,8 @@
   "type": "module",
   "bin": {
     "lmstudio-agent": "index.js"
+  },
+  "scripts": {
+    "test": "node --test"
   }
 }
