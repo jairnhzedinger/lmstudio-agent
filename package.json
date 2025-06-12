@@ -1,0 +1,11 @@
+{
+  "name": "lmstudio-agent",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "lmstudio-agent": "index.js"
+  },
+  "dependencies": {
+    "shell-quote": "^1.8.2"
+  }
+}
