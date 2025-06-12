@@ -16,7 +16,7 @@ const MAX_TOKENS = process.env.LM_MAX_TOKENS
   : -1;
 const STREAM = process.env.LM_STREAM === 'true';
 
-async function chat(messages) {
+let chat = async function(messages) {
   let res;
   try {
     res = await fetch(`${API_BASE}/chat/completions`, {
@@ -90,6 +90,10 @@ async function chat(messages) {
   }
   const data = await res.json();
   return data.choices[0].message;
+};
+
+function setChat(fn) {
+  chat = fn;
 }
 
 function runCommand(cmd) {
@@ -143,17 +147,27 @@ async function processChat(messages) {
     if(msg.function_call){
       const {name, arguments: args} = msg.function_call;
       let result = '';
+      let parsed;
+      try {
+        parsed = JSON.parse(args);
+      } catch (err) {
+        console.warn(`Falha ao analisar JSON: ${err.message}`);
+        messages.push({role: 'assistant', content: null, function_call: msg.function_call});
+        messages.push({role: 'function', name, content: `erro ao analisar argumentos: ${err.message}`});
+        continue;
+      }
+
       if(name === 'cmd'){
-        const {command} = JSON.parse(args);
+        const {command} = parsed;
         result = runCommand(command);
       } else if(name === 'apply_patch'){
-        const {patch} = JSON.parse(args);
+        const {patch} = parsed;
         result = applyPatch(patch);
       } else if(name === 'read_file'){
-        const {path} = JSON.parse(args);
+        const {path} = parsed;
         result = readFile(path);
       } else if(name === 'list_files'){
-        const {dir} = JSON.parse(args);
+        const {dir} = parsed;
         result = listFiles(dir);
       } else if(name === 'done'){
         console.log('Tarefa concluída.');
@@ -221,4 +235,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export {chat, runCommand, applyPatch, readFile, listFiles, loadProjectDocs, processChat, main};
+export {chat, setChat, runCommand, applyPatch, readFile, listFiles, loadProjectDocs, processChat, main};
