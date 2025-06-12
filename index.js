@@ -3,6 +3,7 @@ import {spawnSync} from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import readline from 'readline';
 
 const API_BASE = process.env.LM_BASE_URL || 'http://localhost:1234/v1';
 const MODEL = process.env.LM_MODEL || 'google/gemma-3-4b';
@@ -88,21 +89,7 @@ function loadProjectDocs() {
   return docs;
 }
 
-async function main() {
-  const prompt = process.argv.slice(2).join(' ');
-  if(!prompt){
-    console.log('Uso: lmstudio-agent "sua instrução"');
-    process.exit(1);
-  }
-  const docs = loadProjectDocs();
-  let systemContent = 'Você é um agente de código que executa comandos e aplica patches usando funções.';
-  if(docs) {
-    systemContent += '\n\nContexto do projeto:\n' + docs;
-  }
-  const messages = [
-    {role: 'system', content: systemContent},
-    {role: 'user', content: prompt}
-  ];
+async function processChat(messages) {
   while(true){
     const msg = await chat(messages);
     if(msg.function_call){
@@ -116,14 +103,54 @@ async function main() {
         result = applyPatch(patch);
       } else if(name === 'done'){
         console.log('Tarefa concluída.');
-        break;
+        return false;
       }
       messages.push({role: 'assistant', content: null, function_call: msg.function_call});
       messages.push({role: 'function', name, content: result});
       continue;
     }
     console.log(msg.content);
+    messages.push({role: 'assistant', content: msg.content});
     break;
+  }
+  return true;
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const interactive = args.includes('--repl') || args.includes('-i');
+  const prompt = args.filter(a => a !== '--repl' && a !== '-i').join(' ');
+  if(!prompt && !interactive){
+    console.log('Uso: lmstudio-agent "sua instrução" [--repl]');
+    process.exit(1);
+  }
+  const docs = loadProjectDocs();
+  let systemContent = 'Você é um agente de código que executa comandos e aplica patches usando funções.';
+  if(docs) {
+    systemContent += '\n\nContexto do projeto:\n' + docs;
+  }
+  const messages = [
+    {role: 'system', content: systemContent}
+  ];
+
+  if(prompt){
+    messages.push({role: 'user', content: prompt});
+    const cont = await processChat(messages);
+    if(!cont) return;
+  }
+
+  if(interactive){
+    const rl = readline.createInterface({input: process.stdin, output: process.stdout});
+    const ask = q => new Promise(res => rl.question(q, res));
+    while(true){
+      const input = await ask('> ');
+      if(!input.trim()) continue;
+      if(['exit','quit'].includes(input.trim().toLowerCase())) break;
+      messages.push({role: 'user', content: input});
+      const cont = await processChat(messages);
+      if(!cont) break;
+    }
+    rl.close();
   }
 }
 
