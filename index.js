@@ -16,7 +16,7 @@ const MAX_TOKENS = process.env.LM_MAX_TOKENS
   : -1;
 const STREAM = process.env.LM_STREAM === 'true';
 
-async function chat(messages) {
+let chat = async function(messages) {
   let res;
   try {
     res = await fetch(`${API_BASE}/chat/completions`, {
@@ -76,6 +76,7 @@ async function chat(messages) {
         {
           name: 'write_file',
           description: 'Escreve dados em um arquivo',
+          description: 'Escreve conteúdo em um arquivo',
           parameters: {
             type: 'object',
             properties: {
@@ -102,6 +103,10 @@ async function chat(messages) {
   }
   const data = await res.json();
   return data.choices[0].message;
+};
+
+function setChat(fn) {
+  chat = fn;
 }
 
 function runCommand(cmd) {
@@ -149,6 +154,7 @@ function listFiles(dir) {
   }
 }
 
+// escreve conteúdo em um arquivo
 function writeFile(pathname, content) {
   try {
     fs.writeFileSync(pathname, content, 'utf8');
@@ -159,6 +165,7 @@ function writeFile(pathname, content) {
 }
 
 async function processChat(messages, chatFn = chat) {
+async function processChat(messages) {
   while(true){
     const msg = await chatFn(messages);
     if(msg.function_call){
@@ -173,6 +180,14 @@ async function processChat(messages, chatFn = chat) {
         messages.push({role: 'function', name, content: result});
         continue;
       }
+        parsed = JSON.parse(args);
+      } catch (err) {
+        console.warn(`Falha ao analisar JSON: ${err.message}`);
+        messages.push({role: 'assistant', content: null, function_call: msg.function_call});
+        messages.push({role: 'function', name, content: `erro ao analisar argumentos: ${err.message}`});
+        continue;
+      }
+
       if(name === 'cmd'){
         const {command} = parsed;
         result = runCommand(command);
@@ -187,6 +202,7 @@ async function processChat(messages, chatFn = chat) {
         result = listFiles(dir);
       } else if(name === 'write_file'){
         const {path, content} = parsed;
+        const {path, content} = JSON.parse(args);
         result = writeFile(path, content);
       } else if(name === 'done'){
         console.log('Tarefa concluída.');
@@ -253,5 +269,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exit(1);
   });
 }
-
+export {chat, setChat, runCommand, applyPatch, readFile, listFiles, loadProjectDocs, processChat, main};
 export {chat, runCommand, applyPatch, readFile, listFiles, writeFile, loadProjectDocs, processChat, main};

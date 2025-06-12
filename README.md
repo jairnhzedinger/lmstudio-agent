@@ -64,6 +64,7 @@ O agente suporta várias funções especiais que o modelo pode acionar:
 - `read_file` – lê o conteúdo de um arquivo.
 - `list_files` – lista os arquivos de um diretório.
 - `write_file` – grava conteúdo em um arquivo.
+- `write_file` – grava texto em um arquivo.
 - `done` – encerra a sessão.
 
 ## Dicas de prompt
