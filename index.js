@@ -74,6 +74,18 @@ async function chat(messages) {
           }
         },
         {
+          name: 'write_file',
+          description: 'Escreve dados em um arquivo',
+          parameters: {
+            type: 'object',
+            properties: {
+              path: { type: 'string' },
+              content: { type: 'string' }
+            },
+            required: ['path', 'content']
+          }
+        },
+        {
           name: 'done',
           description: 'Finaliza a sessão',
           parameters: { type: 'object', properties: {} }
@@ -137,24 +149,45 @@ function listFiles(dir) {
   }
 }
 
-async function processChat(messages) {
+function writeFile(pathname, content) {
+  try {
+    fs.writeFileSync(pathname, content, 'utf8');
+    return 'arquivo escrito com sucesso';
+  } catch (err) {
+    return `erro ao escrever arquivo: ${err.message}`;
+  }
+}
+
+async function processChat(messages, chatFn = chat) {
   while(true){
-    const msg = await chat(messages);
+    const msg = await chatFn(messages);
     if(msg.function_call){
       const {name, arguments: args} = msg.function_call;
       let result = '';
+      let parsed;
+      try {
+        parsed = args ? JSON.parse(args) : {};
+      } catch (err) {
+        result = `erro ao processar argumentos: ${err.message}`;
+        messages.push({role: 'assistant', content: null, function_call: msg.function_call});
+        messages.push({role: 'function', name, content: result});
+        continue;
+      }
       if(name === 'cmd'){
-        const {command} = JSON.parse(args);
+        const {command} = parsed;
         result = runCommand(command);
       } else if(name === 'apply_patch'){
-        const {patch} = JSON.parse(args);
+        const {patch} = parsed;
         result = applyPatch(patch);
       } else if(name === 'read_file'){
-        const {path} = JSON.parse(args);
+        const {path} = parsed;
         result = readFile(path);
       } else if(name === 'list_files'){
-        const {dir} = JSON.parse(args);
+        const {dir} = parsed;
         result = listFiles(dir);
+      } else if(name === 'write_file'){
+        const {path, content} = parsed;
+        result = writeFile(path, content);
       } else if(name === 'done'){
         console.log('Tarefa concluída.');
         return false;
@@ -221,4 +254,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export {chat, runCommand, applyPatch, readFile, listFiles, loadProjectDocs, processChat, main};
+export {chat, runCommand, applyPatch, readFile, listFiles, writeFile, loadProjectDocs, processChat, main};

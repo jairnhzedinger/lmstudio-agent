@@ -5,7 +5,7 @@ import {tmpdir} from 'os';
 import {join} from 'path';
 import {spawnSync} from 'child_process';
 import {test} from 'node:test';
-import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles} from '../index.js';
+import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles, writeFile, processChat} from '../index.js';
 
 
 test('loadProjectDocs inclui conteudo do README', () => {
@@ -51,4 +51,26 @@ test('listFiles lista arquivos do diretorio', () => {
   const out = listFiles(dir);
   assert.ok(out.includes('a.txt'));
   assert.ok(out.includes('b.txt'));
+});
+
+test('writeFile grava dados em arquivo', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
+  const file = join(dir, 'saida.txt');
+  const result = writeFile(file, 'dados');
+  const content = fs.readFileSync(file, 'utf8');
+  assert.strictEqual(result.trim(), 'arquivo escrito com sucesso');
+  assert.strictEqual(content, 'dados');
+});
+
+test('processChat lida com JSON invalido', async () => {
+  const messages = [{role: 'system', content: 'teste'}];
+  let called = false;
+  const fakeChat = async () => {
+    if(called) return {role: 'assistant', content: 'ok'};
+    called = true;
+    return {role: 'assistant', function_call: {name: 'cmd', arguments: '{'}};
+  };
+  await processChat(messages, fakeChat);
+  const funcMsg = messages[messages.length - 2];
+  assert.ok(funcMsg.content.startsWith('erro ao processar argumentos'));
 });
