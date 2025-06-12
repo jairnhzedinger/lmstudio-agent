@@ -38,6 +38,16 @@ Variáveis de ambiente:
 - `LM_MAX_TOKENS` – limite máximo de tokens (padrão -1).
 - `LM_STREAM` – defina como `true` para habilitar streaming.
 
+### Usando o modelo DeepCoder
+
+Para utilizar o **agentica-org/DeepCoder-14B-Preview-GGUF** basta definir a
+variável `LM_MODEL` apontando para esse modelo. Certifique-se de baixar o
+arquivo `.gguf` no LM Studio ou em outro projeto compatível com `llama.cpp`.
+
+```bash
+LM_MODEL="agentica-org/DeepCoder-14B-Preview-GGUF" lmstudio-agent "Sua instrução"
+```
+
 ### Requisição com `curl`
 
 O exemplo abaixo mostra como enviar manualmente uma mensagem para o LM Studio:
