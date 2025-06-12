@@ -5,7 +5,7 @@ import {tmpdir} from 'os';
 import {join} from 'path';
 import {spawnSync} from 'child_process';
 import {test} from 'node:test';
-import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles} from '../index.js';
+import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles, writeFile} from '../index.js';
 
 
 test('loadProjectDocs inclui conteudo do README', () => {
@@ -51,4 +51,13 @@ test('listFiles lista arquivos do diretorio', () => {
   const out = listFiles(dir);
   assert.ok(out.includes('a.txt'));
   assert.ok(out.includes('b.txt'));
+});
+
+test('writeFile cria e grava conteudo', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
+  const file = join(dir, 'novo.txt');
+  const msg = writeFile(file, 'abc');
+  const data = fs.readFileSync(file, 'utf8');
+  assert.strictEqual(data, 'abc');
+  assert.strictEqual(msg.trim(), 'arquivo escrito com sucesso');
 });
