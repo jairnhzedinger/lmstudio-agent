@@ -74,6 +74,18 @@ let chat = async function(messages) {
           }
         },
         {
+          name: 'write_file',
+          description: 'Escreve conteúdo em um arquivo',
+          parameters: {
+            type: 'object',
+            properties: {
+              path: { type: 'string' },
+              content: { type: 'string' }
+            },
+            required: ['path', 'content']
+          }
+        },
+        {
           name: 'done',
           description: 'Finaliza a sessão',
           parameters: { type: 'object', properties: {} }
@@ -141,6 +153,16 @@ function listFiles(dir) {
   }
 }
 
+// escreve conteúdo em um arquivo
+function writeFile(pathname, content) {
+  try {
+    fs.writeFileSync(pathname, content, 'utf8');
+    return 'arquivo escrito com sucesso';
+  } catch (err) {
+    return `erro ao escrever arquivo: ${err.message}`;
+  }
+}
+
 async function processChat(messages) {
   while(true){
     const msg = await chat(messages);
@@ -169,6 +191,9 @@ async function processChat(messages) {
       } else if(name === 'list_files'){
         const {dir} = parsed;
         result = listFiles(dir);
+      } else if(name === 'write_file'){
+        const {path, content} = JSON.parse(args);
+        result = writeFile(path, content);
       } else if(name === 'done'){
         console.log('Tarefa concluída.');
         return false;
@@ -236,3 +261,4 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
 }
 
 export {chat, setChat, runCommand, applyPatch, readFile, listFiles, loadProjectDocs, processChat, main};
+export {chat, runCommand, applyPatch, readFile, listFiles, writeFile, loadProjectDocs, processChat, main};

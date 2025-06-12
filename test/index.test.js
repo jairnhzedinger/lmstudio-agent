@@ -6,6 +6,7 @@ import {join} from 'path';
 import {spawnSync} from 'child_process';
 import {test} from 'node:test';
 import * as agent from '../index.js';
+import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles, writeFile} from '../index.js';
 
 
 test('loadProjectDocs inclui conteudo do README', () => {
@@ -69,4 +70,11 @@ test('processChat lida com JSON inválido', async () => {
   assert.strictEqual(msgs[1].role, 'assistant');
   assert.ok(msgs[2].content.startsWith('erro ao analisar'));
   agent.setChat(originalChat);
+test('writeFile cria e grava conteudo', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
+  const file = join(dir, 'novo.txt');
+  const msg = writeFile(file, 'abc');
+  const data = fs.readFileSync(file, 'utf8');
+  assert.strictEqual(data, 'abc');
+  assert.strictEqual(msg.trim(), 'arquivo escrito com sucesso');
 });
