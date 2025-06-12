@@ -63,6 +63,7 @@ O agente suporta várias funções especiais que o modelo pode acionar:
 - `apply_patch` – aplica um patch Git no repositório atual.
 - `read_file` – lê o conteúdo de um arquivo.
 - `list_files` – lista os arquivos de um diretório.
+- `write_file` – grava texto em um arquivo.
 - `done` – encerra a sessão.
 
 ## Dicas de prompt
