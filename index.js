@@ -75,7 +75,6 @@ let chat = async function(messages) {
         },
         {
           name: 'write_file',
-          description: 'Escreve dados em um arquivo',
           description: 'Escreve conteúdo em um arquivo',
           parameters: {
             type: 'object',
@@ -165,7 +164,6 @@ function writeFile(pathname, content) {
 }
 
 async function processChat(messages, chatFn = chat) {
-async function processChat(messages) {
   while(true){
     const msg = await chatFn(messages);
     if(msg.function_call){
@@ -174,13 +172,6 @@ async function processChat(messages) {
       let parsed;
       try {
         parsed = args ? JSON.parse(args) : {};
-      } catch (err) {
-        result = `erro ao processar argumentos: ${err.message}`;
-        messages.push({role: 'assistant', content: null, function_call: msg.function_call});
-        messages.push({role: 'function', name, content: result});
-        continue;
-      }
-        parsed = JSON.parse(args);
       } catch (err) {
         console.warn(`Falha ao analisar JSON: ${err.message}`);
         messages.push({role: 'assistant', content: null, function_call: msg.function_call});
@@ -202,7 +193,6 @@ async function processChat(messages) {
         result = listFiles(dir);
       } else if(name === 'write_file'){
         const {path, content} = parsed;
-        const {path, content} = JSON.parse(args);
         result = writeFile(path, content);
       } else if(name === 'done'){
         console.log('Tarefa concluída.');
@@ -269,5 +259,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     process.exit(1);
   });
 }
-export {chat, setChat, runCommand, applyPatch, readFile, listFiles, loadProjectDocs, processChat, main};
-export {chat, runCommand, applyPatch, readFile, listFiles, writeFile, loadProjectDocs, processChat, main};
+export {
+  chat,
+  setChat,
+  runCommand,
+  applyPatch,
+  readFile,
+  listFiles,
+  writeFile,
+  loadProjectDocs,
+  processChat,
+  main
+};

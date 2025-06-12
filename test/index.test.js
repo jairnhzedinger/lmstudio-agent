@@ -5,21 +5,21 @@ import {tmpdir} from 'os';
 import {join} from 'path';
 import {spawnSync} from 'child_process';
 import {test} from 'node:test';
-import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles, writeFile, processChat} from '../index.js';
 import * as agent from '../index.js';
-import {loadProjectDocs, runCommand, applyPatch, readFile, listFiles, writeFile} from '../index.js';
 
-
+// verifica se o README é incorporado
 test('loadProjectDocs inclui conteudo do README', () => {
   const docs = agent.loadProjectDocs();
   assert.ok(docs.includes('Agente LM Studio'));
 });
 
+// confirma execucao de comandos
 test('runCommand retorna saida do comando', () => {
   const out = agent.runCommand('echo hello');
   assert.strictEqual(out.trim(), 'hello');
 });
 
+// aplica patch git em repositorio temporario
 test('applyPatch aplica patch git', () => {
   const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
   const cwd = process.cwd();
@@ -38,14 +38,16 @@ test('applyPatch aplica patch git', () => {
   process.chdir(cwd);
 });
 
+// leitura de arquivo
 test('readFile retorna conteudo correto', () => {
   const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
-  const file = join(dir, 'example.txt');
+  const file = join(dir, 'exemplo.txt');
   fs.writeFileSync(file, 'conteudo');
   const out = agent.readFile(file);
   assert.strictEqual(out, 'conteudo');
 });
 
+// listagem de diretorios
 test('listFiles lista arquivos do diretorio', () => {
   const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
   fs.writeFileSync(join(dir, 'a.txt'), '');
@@ -55,32 +57,23 @@ test('listFiles lista arquivos do diretorio', () => {
   assert.ok(out.includes('b.txt'));
 });
 
+// gravacao em disco
 test('writeFile grava dados em arquivo', () => {
   const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
   const file = join(dir, 'saida.txt');
-  const result = writeFile(file, 'dados');
+  const result = agent.writeFile(file, 'dados');
   const content = fs.readFileSync(file, 'utf8');
   assert.strictEqual(result.trim(), 'arquivo escrito com sucesso');
   assert.strictEqual(content, 'dados');
 });
 
+// processChat deve lidar com JSON mal formado
 test('processChat lida com JSON invalido', async () => {
-  const messages = [{role: 'system', content: 'teste'}];
-  let called = false;
-  const fakeChat = async () => {
-    if(called) return {role: 'assistant', content: 'ok'};
-    called = true;
-    return {role: 'assistant', function_call: {name: 'cmd', arguments: '{'}};
-  };
-  await processChat(messages, fakeChat);
-  const funcMsg = messages[messages.length - 2];
-  assert.ok(funcMsg.content.startsWith('erro ao processar argumentos'));
-test('processChat lida com JSON inválido', async () => {
   const originalChat = agent.chat;
-  let call = 0;
+  let first = true;
   agent.setChat(async () => {
-    call++;
-    if (call === 1) {
+    if (first) {
+      first = false;
       return {function_call: {name: 'cmd', arguments: '{oops'}};
     }
     return {content: 'fim'};
@@ -91,11 +84,4 @@ test('processChat lida com JSON inválido', async () => {
   assert.strictEqual(msgs[1].role, 'assistant');
   assert.ok(msgs[2].content.startsWith('erro ao analisar'));
   agent.setChat(originalChat);
-test('writeFile cria e grava conteudo', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'agent-test-'));
-  const file = join(dir, 'novo.txt');
-  const msg = writeFile(file, 'abc');
-  const data = fs.readFileSync(file, 'utf8');
-  assert.strictEqual(data, 'abc');
-  assert.strictEqual(msg.trim(), 'arquivo escrito com sucesso');
 });
