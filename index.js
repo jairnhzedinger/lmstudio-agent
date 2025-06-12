@@ -7,7 +7,7 @@ import readline from 'readline';
 import {pathToFileURL} from 'url';
 
 const API_BASE = process.env.LM_BASE_URL || 'http://45.161.201.27:1234/v1';
-const MODEL = process.env.LM_MODEL || 'google/gemma-3-12b';
+const MODEL = process.env.LM_MODEL || 'agentica-org_deepcoder-14b-preview';
 const TEMPERATURE = process.env.LM_TEMPERATURE
   ? parseFloat(process.env.LM_TEMPERATURE)
   : 0.7;
