@@ -35,11 +35,17 @@ Variáveis de ambiente:
 - `LM_BASE_URL` – URL da API do LM Studio.
 - `LM_MODEL` – modelo a ser utilizado.
 
-O agente suporta três funções especiais que o modelo pode acionar:
+O agente suporta várias funções especiais que o modelo pode acionar:
 
 - `cmd` – executa um comando no shell e retorna a saída.
 - `apply_patch` – aplica um patch Git no repositório atual.
+- `read_file` – lê o conteúdo de um arquivo.
+- `list_files` – lista os arquivos de um diretório.
 - `done` – encerra a sessão.
+
+### Testes
+
+Execute `npm test` para rodar a suíte de testes automatizados.
 
 ## Licença
 
