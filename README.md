@@ -24,3 +24,7 @@ O agente suporta três funções especiais que o modelo pode acionar:
 - `cmd` – executa um comando no shell e retorna a saída.
 - `apply_patch` – aplica um patch Git no repositório atual.
 - `done` – encerra a sessão.
+
+## Licença
+
+Distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
