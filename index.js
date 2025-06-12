@@ -7,7 +7,7 @@ import readline from 'readline';
 import {pathToFileURL} from 'url';
 
 const API_BASE = process.env.LM_BASE_URL || 'http://45.161.201.27:1234/v1';
-const MODEL = process.env.LM_MODEL || 'google/gemma-3-4b';
+const MODEL = process.env.LM_MODEL || 'google/gemma-3-12b';
 
 async function chat(messages) {
   let res;
