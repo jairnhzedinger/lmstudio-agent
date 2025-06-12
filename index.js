@@ -8,14 +8,16 @@ const API_BASE = process.env.LM_BASE_URL || 'http://localhost:1234/v1';
 const MODEL = process.env.LM_MODEL || 'google/gemma-3-4b';
 
 async function chat(messages) {
-  const res = await fetch(`${API_BASE}/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: MODEL,
-      messages,
-      temperature: 0,
-      functions: [
+  let res;
+  try {
+    res = await fetch(`${API_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: MODEL,
+        messages,
+        temperature: 0,
+        functions: [
         {
           name: 'cmd',
           description: 'Executa um comando no shell',
@@ -45,7 +47,11 @@ async function chat(messages) {
         }
       ]
     })
-  });
+    });
+  } catch (err) {
+    console.error(`Could not connect to LM Studio API at ${API_BASE}`);
+    throw err;
+  }
   if(!res.ok){
     throw new Error(`Erro HTTP ${res.status}`);
   }
