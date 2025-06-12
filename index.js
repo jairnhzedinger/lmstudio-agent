@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 
-const API_BASE = process.env.LM_BASE_URL || 'http://192.168.3.159:1234/v1';
+const API_BASE = process.env.LM_BASE_URL || 'http://localhost:1234/v1';
 const MODEL = process.env.LM_MODEL || 'google/gemma-3-4b';
 
 async function chat(messages) {
