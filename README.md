@@ -5,7 +5,7 @@ Este pacote implementa um agente simples para interagir com um LLM local executa
 ## Uso
 
 ```bash
-pnpm install --global ./packages/lmstudio-agent
+pnpm install --global .
 lmstudio-agent "Descreva sua tarefa"
 ```
 
