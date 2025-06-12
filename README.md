@@ -16,6 +16,15 @@ lmstudio-agent --repl
 ```
 Digite `exit` para sair do modo interativo.
 
+### Exemplo
+
+Para descobrir a versão do sistema operacional você pode executar:
+
+```bash
+lmstudio-agent "Qual a versão do meu sistema?"
+```
+O modelo utiliza a função `cmd` para rodar comandos como `uname -a` ou `lsb_release -a` e retornar o resultado.
+
 Se receber `lmstudio-agent: command not found`, verifique se o diretório de binários globais do pnpm está no seu `PATH`.
 Execute `pnpm setup` ou adicione `~/.local/share/pnpm` (ou o caminho equivalente no seu sistema) à variável `PATH`.
 
