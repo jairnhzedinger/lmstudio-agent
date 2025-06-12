@@ -125,7 +125,8 @@ async function main() {
     process.exit(1);
   }
   const docs = loadProjectDocs();
-  let systemContent = 'Você é um agente de código que executa comandos e aplica patches usando funções.';
+  let systemContent = 'Você é um agente de código que executa comandos e aplica patches usando funções. ' +
+    'Sempre que a tarefa exigir informações do sistema ou manipulação de arquivos, utilize as funções "cmd" ou "apply_patch" e retorne a saída resultante.';
   if(docs) {
     systemContent += '\n\nContexto do projeto:\n' + docs;
   }
