@@ -4,8 +4,5 @@
   "type": "module",
   "bin": {
     "lmstudio-agent": "index.js"
-  },
-  "dependencies": {
-    "shell-quote": "^1.8.2"
   }
 }
